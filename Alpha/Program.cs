@@ -16,7 +16,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-LoginEndpoints.Map(app);
+SecurityEndpoints.Map(app);
 CoreEndpoints.Map(app);
 
 app.Run();

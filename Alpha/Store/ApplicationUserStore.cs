@@ -2,7 +2,7 @@
 {
     public class ApplicationUserStore : IApplicationUserStore
     {
-        private static IEnumerable<ApplicationUser> _users = new List<ApplicationUser>
+        private static IList<ApplicationUser> _users = new List<ApplicationUser>
         {
             new ()
             {
@@ -13,7 +13,13 @@
 
         public Task Create(ApplicationUser obj)
         {
-            throw new NotImplementedException();
+            if(_users.Any(u=>u.Username == obj.Username))
+            {
+                throw new ArgumentException("Username already exists.");
+            }
+
+            _users.Add(obj);
+            return Task.CompletedTask;
         }
 
         public Task Delete(int key)

@@ -40,23 +40,29 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
-    public async Task<AuthenticationResult> RegisterAsync(string email, string password)
+    public async Task<AuthenticationResult> RegisterAsync(string userName, string password)
     {
-        return default;
-        //var user = new ApplicationUser() { UserName = email, Email = email };
-        //var result = await _userManager.CreateAsync(user, password);
-        //if (result.Succeeded)
-        //{
-        //    return new AuthResult()
-        //    {
-        //        Succeeded = true,
-        //        Token = _tokenService.GenerateToken(email)
-        //    };
-        //}
+        var user = new ApplicationUser()
+        {
+            Username = userName,
+            Password = password
+        };
 
-        //return new AuthResult()
-        //{
-        //    Errors = result.Errors.Select(x => x.Description)
-        //};
+        try
+        {
+            await _applicationUserStore.Create(user);
+        }
+        catch (Exception ex)
+        {
+            return new AuthenticationResult()
+            {
+                Errors = new[]
+                {
+                    ex.Message
+                }
+            };
+        }
+
+        return await this.LoginAsync(userName, password);
     }
 }
