@@ -1,47 +1,46 @@
-﻿using Alpha.Model;
+﻿using Alpha.Store;
+using Microsoft.AspNetCore.Identity;
 
 namespace Alpha.Service;
-public class AuthService : IAuthService
+public class AuthenticationService : IAuthenticationService
 {
-    //private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
+    private readonly IApplicationUserStore _applicationUserStore;
 
-    public AuthService(ITokenService tokenService)
+    public AuthenticationService(ITokenService tokenService, IApplicationUserStore applicationUserStore)
     {
-        //_userManager = userManager;
         _tokenService = tokenService;
+        _applicationUserStore = applicationUserStore;
     }
 
-    public async Task<AuthResult> LoginAsync(string userName, string password)
+    public async Task<AuthenticationResult> LoginAsync(string userName, string password)
     {
-        //var user = await _userManager.FindByEmailAsync(email);
-        var user = new ApplicationUser();
+        var user = await _applicationUserStore.FindByUsernameAsync(userName);
         if (user == null)
         {
-            return new AuthResult()
+            return new AuthenticationResult()
             {
                 Errors = new List<string>() { "Invalid email or password" }
             };
         }
 
-        //var isValidPassword = await _userManager.CheckPasswordAsync(user, password);
-        var isValidPassword = true;
+        var isValidPassword = user.Password == password;
         if (isValidPassword == true)
         {
-            return new AuthResult()
+            return new AuthenticationResult()
             {
                 Succeeded = true,
                 Token = _tokenService.GenerateToken(userName)
             };
         }
 
-        return new AuthResult()
+        return new AuthenticationResult()
         {
             Errors = new List<string>() { "Invalid email or password" }
         };
     }
 
-    public async Task<AuthResult> RegisterAsync(string email, string password)
+    public async Task<AuthenticationResult> RegisterAsync(string email, string password)
     {
         return default;
         //var user = new ApplicationUser() { UserName = email, Email = email };
