@@ -13,3 +13,4 @@ global using System.Net.Http.Headers;
 global using Alpha.Configuration;
 global using Alpha.Endpoint;
 global using Alpha.Store;
+global using Microsoft.AspNetCore.Builder;
